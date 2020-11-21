@@ -134,6 +134,7 @@ input[value="other"]:checked ~ .reveal-if-active {
   width: 85%;
   height: 75%;
   background-color: #28A695;
+  border-radius: 15px;
 }
 
 .brt{
@@ -144,6 +145,7 @@ input[value="other"]:checked ~ .reveal-if-active {
   width: 90%;
   height: 75%;
   margin: 2%;
+  border-radius: 15px;
 }
 .info-icn{
   display: inline;
