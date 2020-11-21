@@ -73,3 +73,21 @@ var timedChecks = setInterval(checkBox, 1000);
 var firstCheck = setTimeout(checkBox, 10);
 var firstCheck2 = setTimeout(checkBox2, 10);
 
+$(document).keyup(function (event) {
+  switch (event.code) {
+    case "KeyZ":
+      $("#home").click();
+      location.href = '/';
+      break;
+    case "KeyX":
+      location.href = '/gameWorkOut';
+      break;
+    case "KeyC":
+      location.href = '/statistics';
+      break;
+
+    default:
+        console.log("You didn't press a defined button!");
+      break;
+  }
+});
