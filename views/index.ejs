@@ -1,0 +1,48 @@
+<%- include("partials/header") %> 
+<div class="invisble-help">
+  <p style="font-size: 1.7rem;">Keybinds for using the weather page! <br>Good to know: <br>This application will get you both the best days in winter and in summer!</p>
+  <img src="/images/weatherKeys.png" alt="keyboard-mapping" class="key-map">
+</div>
+
+<h1>Can I run!?<i class="fas fa-info-circle info-icn"></i></h1>
+<p>
+  Simple web application that checks and sorts the best<br />
+  days for the rest of the week for you to run at in your city!
+</p>
+<form action="/" method="POST">
+  <input
+    type="radio"
+    id="cityChoice1"
+    name="cityRadio"
+    value="ramat gan"
+    checked
+  />
+  <label for="cityChoice1">Ramat Gan</label>
+  <input type="radio" id="cityChoice2" name="cityRadio" value="tel aviv" />
+  <label for="cityChoice2">Tel Aviv</label>
+  <input type="radio" id="cityChoice3" name="cityRadio" value="other" />
+  <label for="cityChoice3">Other</label><br />
+  <label class="reveal-if-active" for="cityInput">City Name:</label>
+  <input class="reveal-if-active" id="cityInput" type="text" name="cityName"/>
+  <br />
+  <p>Temperature type:</p>
+  <input
+    type="radio"
+    id="contactChoice1"
+    name="unitType"
+    value="metric"
+    checked
+  />
+  <label for="contactChoice1">Celsius</label>
+  <input type="radio" id="contactChoice2" name="unitType" value="imperial" />
+  <label for="contactChoice2">Fahrenheit</label>
+  <input type="radio" id="contactChoice3" name="unitType" value="standard" />
+  <label for="contactChoice3">Kelvin</label>
+  <br /><br />
+  <button id="show" class="btn my-btn" type="submit">Show Weather</button>
+</form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="/js/global.js"></script>
+<script src="/js/index.js"></script>
+
+<%- include("partials/footer") %> 

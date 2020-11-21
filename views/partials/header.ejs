@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Weather App</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/styles.css">
+      <script
+      src="https://kit.fontawesome.com/e7a61b10ca.js"
+      crossorigin="anonymous"
+    ></script>
+  <nav class="navbar navbar-default">
+    <div class="container">
+      <div class="navbar-header">
+        <p class="navbar-brand">AVIV'S TRAINING</p>
+      </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li id="home"><a href="/">Can I run?!</a></li>
+          <li id="gameWorkOut"><a href="/gameWorkOut">Home Workout</a></li>
+          <li id="statistics"><a href="/statistics">Statistics</a></li>
+          <div class="box2 sb9"></div>
+          <input id="hours" value="<%= hours %>" type="hidden">
+          <input id="minutes" value="<%= minutes %>" type="hidden">
+          <input id="seconds" value="<%= seconds %>" type="hidden">
+          <input id="onOff" value="<%= onOff %>" type="hidden">
+        </ul>
+    </div>
+    
+  </nav>
+  <body>
+    <div id="whole" class="container">

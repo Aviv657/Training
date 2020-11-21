@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Weather App</title>
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script
+      src="https://kit.fontawesome.com/e7a61b10ca.js"
+      crossorigin="anonymous"
+    ></script>
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <p class="navbar-brand">AVIV'S TRAINING</p>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li id="home"><a href="/">Can I run?!</a></li>
+          <li id="gameWorkOut"><a href="/gameWorkOut">Home Workout</a></li>
+          <li id="statistics"><a href="/statistics">Statistics</a></li>
+          <div class="box2 workOut"></div>
+          <input id="hours" value="<%= hours %>" type="hidden" />
+          <input id="minutes" value="<%= minutes %>" type="hidden" />
+          <input id="seconds" value="<%= seconds %>" type="hidden" />
+          <input id="onOff" value="<%= onOff %>" type="hidden" />
+        </ul>
+      </div>
+    </nav>
+    <body>
+      <div id="whole" class="container">
+        <div class="invisble-help">
+          <p style="font-size: 1.7rem;">Keybinds for using the workout page! <br>Good to know: <br>After finishing a session you can go to "Statistics" to see the stats!</p>
+          <img src="/images/workOutKeys.png" alt="keyboard-mapping" class="key-map">
+        </div>
+        <h1>Game Workout!<i class="fas fa-info-circle info-icn"></i></h1>
+        <p>
+          Simple web application that monitors your workouts! <br />
+          This one specifically monitors game workouts.
+        </p>
+        <form action="/gameWorkOut" method="POST">
+          <input type="radio" id="mult1" name="mult" value="1" checked />
+          <label for="mult1">1</label>
+          <input type="radio" id="mult2" name="mult" value="2" />
+          <label for="mult2">2</label>
+          <input type="radio" id="mult3" name="mult" value="3" />
+          <label for="mult3">3</label><br />
+          <input type="radio" id="mult4" name="mult" value="4" />
+          <label for="mult4">4</label>
+          <input type="radio" id="mult5" name="mult" value="5" />
+          <label for="mult5">5</label>
+          <input type="radio" id="mult6" name="mult" value="6" />
+          <label for="mult6">6</label><br />
+          <input type="radio" id="mult7" name="mult" value="7" />
+          <label for="mult7">7</label>
+          <input type="radio" id="mult8" name="mult" value="8" />
+          <label for="mult8">8</label>
+          <input type="radio" id="mult9" name="mult" value="9" />
+          <label for="mult9">9</label>
+          <input type="radio" id="mult0" name="mult" value="0"/>
+          <label for="mult0">0</label><br /><br />
+          <button
+            id="add"
+            name="action"
+            value="add"
+            class="btn my-btn"
+            type="submit"
+          >
+            Add Up
+          </button>
+          <button
+            id="back"
+            name="action"
+            value="back"
+            class="btn my-btn"
+            type="submit"
+          >
+            Go Back
+          </button>
+          <button
+            id="reset"
+            name="action"
+            value="reset"
+            class="btn my-btn"
+            type="submit"
+          >
+            Reset
+          </button>
+        </form>
+
+        <form action="/addStatistics" method="POST">
+          <div class="container-fluid total-work">
+            <div class="row">
+              <div style="z-index: -1;" class="col-lg-4 col-sm-12">
+                <div class="added invis">+<%= pushUps %></div>
+                <h3>Push-Ups:</h3>
+                <p class="totalSet"><%= PTotalPushUps %></p>
+                <input
+                  type="hidden"
+                  name="sessionPushUps"
+                  value="<%= pushUps %>"
+                />
+              </div>
+              <div style="z-index: -1;" class="col-lg-4 col-sm-12">
+                <div class="added invis">+<%= sitUps %></div>
+                <h3>Sit-Ups:</h3>
+                <p class="totalSet"><%= PTotalSitUps %></p>
+                <input
+                  type="hidden"
+                  name="sessionSitUps"
+                  value="<%= sitUps %>"
+                />
+              </div>
+              <div style="z-index: -1;" class="col-lg-4 col-sm-12">
+                <div class="added invis">+<%= squats %></div>
+                <h3>Squats:</h3>
+                <p class="totalSet"><%= PTotalSquats %></p>
+                <input
+                  type="hidden"
+                  name="sessionSquats"
+                  value="<%= squats %>"
+                />
+              </div>
+              <input
+                type="hidden"
+                id="pressedStart"
+                value="<%= pressedStart %>"
+              />
+              <input
+                type="hidden"
+                id="pressedDelete"
+                value="<%= pressedDelete %>"
+              />
+            </div>
+          </div>
+          <button
+            id="session"
+            class="btn my-btn btn-lg btn-block"
+            type="submit"
+          ><%= sessionButton %></button>
+        </form>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="/js/global.js"></script>
+        <script src="/js/gameWorkOut.js"></script>
+
+        <%- include("partials/footer") %>
+      </div>
+    </body>
+  </head>
+</html>

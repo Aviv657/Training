@@ -1,0 +1,20 @@
+<%- include("partials/header") %> 
+
+<h1>Best days to run in <%= cityName %>!</h1>
+<div class="container-fluid">
+  <div class="row">
+    <% for( let i = 0; i < daysArray.length; i++ ) { %>
+    <div class="col-lg-4 col-sm-12"">
+      <h3><%= i+1 %>. <%= daysArray[i].dayOfWeek %></h3>
+      <img style="width: 28%;" src=<%= daysArray[i].iconAdress %>  />
+      <p style="font-size: 1.9rem;"><%= daysArray[i].mainDesc %></p>
+      <p>Temperature: <strong><%= daysArray[i].temp %> degrees <%= unit %>.</strong></p>
+      <p>Description: <%= daysArray[i].desc %>  </p>
+    </div>
+    <% } %>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="/js/global.js"></script>
+
+<%- include("partials/footer") %> 

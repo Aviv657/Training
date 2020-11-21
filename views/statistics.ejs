@@ -1,0 +1,27 @@
+<%- include("partials/header") %> 
+
+<h1>Statistics</h1>
+<div class="container-fluid">
+  <div class="row">
+    <% if(sessions.length < 1){ %>
+    <h3>There are no past sessions yet!</h3>
+    <p>Go to "Home Workout" to finish and upload sessions!</p>
+    <% }else{ %> <% sessions.forEach(function(session){ %>
+    <div class="stat-item col-lg-4 col-sm-12">
+      <h3><%= session.date %></h3>
+      <div class="grid">
+        <p class="grid-item">Push Ups: <%= session.pushUps %></p>
+        <p class="grid-item">Repetitions: <%= session.reps %></p>
+        <p class="grid-item">Sit Ups: <%= session.sitUps %></p>
+        <p class="grid-item">Empty Repetitions: <%= session.emptyReps %></p>
+        <p class="grid-item">Squats: <%= session.squats %></p>
+        <p class="grid-item">Session Length: ㅤㅤㅤㅤㅤ<%= session.timeDiff %> </p>
+      </div>
+    </div>
+    <% })} %>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="/js/global.js"></script>
+
+<%- include("partials/footer") %> 
