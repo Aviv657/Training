@@ -3,6 +3,7 @@ const https = require("https");
 const bodyParser = require("body-parser");
 const date = require(__dirname + "/date.js");
 const ejs = require("ejs");
+const mongoose = require("mongoose");
 const { query } = require("express");
 const { time } = require("console");
 
@@ -11,6 +12,47 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.use(express.static("public"));
+
+mongoose.connect(
+  "mongodb+srv://aviv:test123@cluster0.l3wmw.mongodb.net/training",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
+
+const sessionSchema = new mongoose.Schema({
+  date: {
+    type: String,
+    required: true,
+  },
+  reps: {
+    type: Number,
+    required: true,
+  },
+  emptyReps: {
+    type: Number,
+    required: true,
+  },
+  timeDiff: {
+    type: String,
+    required: true,
+  },
+  pushUps: {
+    type: Number,
+    required: true,
+  },
+  sitUps: {
+    type: Number,
+    required: true,
+  },
+  squats: {
+    type: Number,
+    required: true,
+  },
+});
+const Session = mongoose.model("Session", sessionSchema);
+
 let input;
 let daysArray = [];
 let firstDay;
@@ -22,7 +64,6 @@ let firstSport = {
   squats: 0,
 };
 let sports = [firstSport];
-let registeredSessions = [];
 let buttonText = "Start Session!";
 let startedTime = 0;
 let timeDiff;
@@ -83,7 +124,9 @@ app.get("/gameWorkOut", function (req, res) {
   } else {
     var time = { hours: 0, minutes: 0, seconds: 0, onOff: false };
   }
-  setTimeout(function(){pressedDelete = false}, 500);
+  setTimeout(function () {
+    pressedDelete = false;
+  }, 500);
   res.render("gameWorkOut", {
     pushUps: thisPushUps,
     sitUps: thisSitUps,
@@ -98,7 +141,7 @@ app.get("/gameWorkOut", function (req, res) {
     minutes: time.minutes,
     seconds: time.seconds,
     onOff: time.onOff,
-  })
+  });
 });
 app.get("/statistics", function (req, res) {
   if (startedTime > 0) {
@@ -106,12 +149,14 @@ app.get("/statistics", function (req, res) {
   } else {
     var time = { hours: 0, minutes: 0, seconds: 0, onOff: false };
   }
-  res.render("statistics", {
-    sessions: registeredSessions,
-    hours: time.hours,
-    minutes: time.minutes,
-    seconds: time.seconds,
-    onOff: time.onOff,
+  Session.find({}, function (err, foundSessions) {
+    res.render("statistics", {
+      sessions: foundSessions,
+      hours: time.hours,
+      minutes: time.minutes,
+      seconds: time.seconds,
+      onOff: time.onOff,
+    });
   });
 });
 
@@ -299,7 +344,7 @@ app.post("/gameWorkOut", function (req, res) {
       sitUps: sports[sports.length - 1].sitUps + thisSitUps,
       squats: sports[sports.length - 1].squats + thisSquats,
     };
-    if(pressedStart === true){
+    if (pressedStart === true) {
       sports.pop();
       pressedStart = false;
     }
@@ -334,7 +379,7 @@ app.post("/addStatistics", function (req, res) {
     pressedStart = true;
     res.redirect("/gameWorkOut");
   } else {
-    if(pressedStart === true){
+    if (pressedStart === true) {
       sports.pop();
     }
     let statistic = {
@@ -348,7 +393,16 @@ app.post("/addStatistics", function (req, res) {
     };
     endSession();
     statistic.timeDiff = date.convertTime(timeDiff);
-    registeredSessions.push(statistic);
+    const session = new Session({
+      date: statistic.date,
+      reps: statistic.reps,
+      emptyReps: statistic.emptyReps,
+      timeDiff: statistic.timeDiff,
+      pushUps: statistic.pushUps,
+      sitUps: statistic.sitUps,
+      squats: statistic.squats,
+    });
+    session.save();
     sports = [firstSport];
     res.redirect("/gameWorkOut");
   }
@@ -371,6 +425,6 @@ function endSession() {
   thisSquats = 0;
 }
 
-app.listen(process.env.PORT || 3000, function () {
-  console.log("Server is up and running on port 3000!");
+app.listen(process.env.PORT || 3000, function(){
+  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
