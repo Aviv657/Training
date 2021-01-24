@@ -151,7 +151,7 @@ app.get("/statistics", function (req, res) {
   }
   Session.find({}, function (err, foundSessions) {
     res.render("statistics", {
-      sessions: foundSessions,
+      sessions: foundSessions.reverse(),
       hours: time.hours,
       minutes: time.minutes,
       seconds: time.seconds,
@@ -373,7 +373,7 @@ app.post("/gameWorkOut", function (req, res) {
   res.redirect("/gameWorkOut");
 });
 
-app.post("/addStatistics", function (req, res) {
+app.post("/addSession", function (req, res) {
   if (buttonText === "Start Session!") {
     startSession();
     pressedStart = true;
@@ -406,6 +406,15 @@ app.post("/addStatistics", function (req, res) {
     sports = [firstSport];
     res.redirect("/gameWorkOut");
   }
+});
+
+app.post("/deleteSession", function(req, res){
+  const sessionId = req.body.sessionId;
+  Session.findByIdAndDelete(sessionId, function (err) {
+    if (!err) {
+      res.redirect("/statistics");
+    }
+  });
 });
 
 function startSession() {

@@ -94,7 +94,7 @@ exports.convertTime = function convertTime(time) {
       " " +
       hours +
       " and ㅤㅤㅤㅤㅤ" +
-      Math.round(newTime % 3600)/60 +
+      Math.round((newTime % 3600)/60) +
       " " +
       minutes
     );

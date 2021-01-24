@@ -1,4 +1,4 @@
-<%- include("partials/header") %> 
+<%- include("partials/header") %>
 
 <h1>Statistics</h1>
 <div class="container-fluid">
@@ -15,7 +15,16 @@
         <p class="grid-item">Sit Ups: <%= session.sitUps %></p>
         <p class="grid-item">Empty Repetitions: <%= session.emptyReps %></p>
         <p class="grid-item">Squats: <%= session.squats %></p>
-        <p class="grid-item">Session Length: ㅤㅤㅤㅤㅤ<%= session.timeDiff %> </p>
+        <p class="grid-item">
+          Session Length: ㅤㅤㅤㅤㅤ<%= session.timeDiff %>
+        </p>
+        <form action="/deleteSession" method="POST" class="">
+          <input type="hidden" name="sessionId" value="<%= session._id %>" />
+          <button
+            type="submit"
+            class="btn fas fa-trash-alt stat-button"
+          ></button>
+        </form>
       </div>
     </div>
     <% })} %>
@@ -23,5 +32,6 @@
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="/js/global.js"></script>
+<script src="/js/statistics.js"></script>
 
-<%- include("partials/footer") %> 
+<%- include("partials/footer") %>
