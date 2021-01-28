@@ -1,0 +1,54 @@
+<%- include("partials/header") %>
+<h1>Settings</h1>
+<p>
+  Here you can control the settings of your training program! <br />
+  From changing default weather cities to changing sets numbers!
+</p>
+<form action="/updateSettings" method="POST">
+  <h3>Weather options:</h3>
+  <p>Default cities:</p>
+  <br />
+  <% settings.forEach(function(setting){ %>
+    <% var j= 1 %>
+  <input type="text" name="cityChoice1" placeholder="<%= setting.firstCity %>" />
+  <input type="text" name="cityChoice2" placeholder="<%= setting.secondCity %>" />
+  <br>
+  <h3>Training options:</h3>
+  <p>Set Options:</p>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Exercise Name</th>
+        <th scope="col">Per Set</th>
+        <th scope="col">Maximum In Rep</th>
+        <th scope="col">Type</th>
+        <th scope="col">Goal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% setting.exercises.forEach(function(exercise){ %>
+      <tr>
+        <th scope="row"><%= j %></th>
+        <td><input type="text" name='exerName<%= j %>'  placeholder="<%= exercise.exerciseName %>" /></td>
+        <td><input type="number" name="exerSet<%= j %>" placeholder="<%= exercise.perSet %>" /></td>
+        <td><input type="number" name="exerMaxRep<%= j %>" placeholder="<%= exercise.maxRep %>" /></td>
+        <input id="old-type<%= j %>" type="hidden" name="oldType<%= j %>" value="<%= exercise.type %>">
+        <td><select id="exer-type<%= j %>" name="exerType<%= j %>">
+          <option value="Number">Number</option>
+          <option value="Seconds">Seconds</option>
+        </select></td>
+        <td><input type="number" name="exerGoal<%= j %>" placeholder="<%= exercise.goal %>" /></td>
+      </tr>
+      <% j++ %> 
+      <% }) %>
+    </tbody>
+  </table>
+  <% }) %>
+  <button class="btn my-btn" type="submit">Apply Changes</button>
+</form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="/js/global.js"></script>
+<script src="/js/settings.js"></script>
+
+<%- include("partials/footer") %>

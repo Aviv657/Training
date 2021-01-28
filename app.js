@@ -6,6 +6,7 @@ const ejs = require("ejs");
 const mongoose = require("mongoose");
 const { query } = require("express");
 const { time } = require("console");
+const { settings } = require("cluster");
 
 const app = express();
 
@@ -38,20 +39,60 @@ const sessionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  pushUps: {
+  firstExercise: {
     type: Number,
     required: true,
   },
-  sitUps: {
+  secondExercise: {
     type: Number,
     required: true,
   },
-  squats: {
+  thirdExercise: {
     type: Number,
     required: true,
   },
 });
 const Session = mongoose.model("Session", sessionSchema);
+
+const exerciseSchema = new mongoose.Schema({
+  exerciseName: {
+    type: String,
+    required: true,
+  },
+  perSet: {
+    type: Number,
+    required: true,
+  },
+  maxRep: {
+    type: Number,
+    required: true,
+  },
+  type: {
+    type: String,
+    required: true,
+  },
+  goal: {
+    type: Number,
+    required: true,
+  },
+});
+const Exercise = mongoose.model("Exercise", exerciseSchema);
+
+const settingSchema = new mongoose.Schema({
+  firstCity: {
+    type: String,
+    required: true,
+  },
+  secondCity: {
+    type: String,
+    required: true,
+  },
+  exercises: {
+    type: [exerciseSchema],
+    required: true,
+  },
+});
+const Setting = mongoose.model("Setting", settingSchema);
 
 let input;
 let daysArray = [];
@@ -59,9 +100,9 @@ let firstDay;
 let cityName;
 let unitShow = "celsius";
 let firstSport = {
-  pushUps: 0,
-  sitUps: 0,
-  squats: 0,
+  firstEx: 0,
+  secondEx: 0,
+  thirdEx: 0,
 };
 let sports = [firstSport];
 let buttonText = "Start Session!";
@@ -70,9 +111,9 @@ let timeDiff;
 let emptyReps = 0;
 let pressedStart = false;
 let pressedDelete = false;
-let thisPushUps = 0;
-let thisSitUps = 0;
-let thisSquats = 0;
+let firstExer = 0;
+let secondExer = 0;
+let thirdExer = 0;
 
 app.get("/", function (req, res) {
   if (startedTime > 0) {
@@ -80,11 +121,15 @@ app.get("/", function (req, res) {
   } else {
     var time = { hours: 0, minutes: 0, seconds: 0, onOff: false };
   }
-  res.render("index", {
-    hours: time.hours,
-    minutes: time.minutes,
-    seconds: time.seconds,
-    onOff: time.onOff,
+  Setting.findOne({}, function (err, foundSetting) {
+    res.render("index", {
+      firstCity: foundSetting.firstCity,
+      secondCity: foundSetting.secondCity,
+      hours: time.hours,
+      minutes: time.minutes,
+      seconds: time.seconds,
+      onOff: time.onOff,
+    });
   });
 });
 app.get("/weather", function (req, res) {
@@ -127,20 +172,23 @@ app.get("/gameWorkOut", function (req, res) {
   setTimeout(function () {
     pressedDelete = false;
   }, 500);
-  res.render("gameWorkOut", {
-    pushUps: thisPushUps,
-    sitUps: thisSitUps,
-    squats: thisSquats,
-    PTotalPushUps: sports[sports.length - 1].pushUps,
-    PTotalSitUps: sports[sports.length - 1].sitUps,
-    PTotalSquats: sports[sports.length - 1].squats,
-    pressedStart: pressedStart,
-    pressedDelete: pressedDelete,
-    sessionButton: buttonText,
-    hours: time.hours,
-    minutes: time.minutes,
-    seconds: time.seconds,
-    onOff: time.onOff,
+  Setting.findOne({}, function(err, foundSetting){
+    res.render("gameWorkOut", {
+      setting: foundSetting,
+      firstExer: firstExer,
+      secondExer: secondExer,
+      thirdExer: thirdExer,
+      totalFirstExer: sports[sports.length - 1].firstEx,
+      totalSecondExer: sports[sports.length - 1].secondEx,
+      totalThirdExer: sports[sports.length - 1].thirdEx,
+      pressedStart: pressedStart,
+      pressedDelete: pressedDelete,
+      sessionButton: buttonText,
+      hours: time.hours,
+      minutes: time.minutes,
+      seconds: time.seconds,
+      onOff: time.onOff,
+    });
   });
 });
 app.get("/statistics", function (req, res) {
@@ -150,8 +198,27 @@ app.get("/statistics", function (req, res) {
     var time = { hours: 0, minutes: 0, seconds: 0, onOff: false };
   }
   Session.find({}, function (err, foundSessions) {
-    res.render("statistics", {
-      sessions: foundSessions.reverse(),
+    Setting.findOne({}, function (err, foundSetting) {
+      res.render("statistics", {
+        setting: foundSetting,
+        sessions: foundSessions.reverse(),
+        hours: time.hours,
+        minutes: time.minutes,
+        seconds: time.seconds,
+        onOff: time.onOff,
+      });
+    });
+  });
+});
+app.get("/settings", function (req, res) {
+  if (startedTime > 0) {
+    var time = date.bubble(startedTime);
+  } else {
+    var time = { hours: 0, minutes: 0, seconds: 0, onOff: false };
+  }
+  Setting.find({}, function (err, foundSettings) {
+    res.render("settings", {
+      settings: foundSettings,
       hours: time.hours,
       minutes: time.minutes,
       seconds: time.seconds,
@@ -329,48 +396,56 @@ function calcScore(temp, mainDesc, id) {
 }
 
 app.post("/gameWorkOut", function (req, res) {
-  if (req.body.action === "add") {
-    let whichSquats;
-    if (req.body.mult >= 3) {
-      whichSquats = 20;
-    } else {
-      whichSquats = req.body.mult * 8;
-    }
-    thisPushUps = req.body.mult * 4;
-    thisSitUps = req.body.mult * 24;
-    thisSquats = whichSquats;
-    let newSport = {
-      pushUps: sports[sports.length - 1].pushUps + thisPushUps,
-      sitUps: sports[sports.length - 1].sitUps + thisSitUps,
-      squats: sports[sports.length - 1].squats + thisSquats,
-    };
-    if (pressedStart === true) {
-      sports.pop();
-      pressedStart = false;
-    }
-    if (Number(req.body.mult) === 0) {
-      emptyReps++;
-    }
-    if (buttonText === "Start Session!") {
-      sports.pop();
-      startSession();
-    }
-    sports.push(newSport);
-  } else if (req.body.action === "back") {
-    if (sports.length > 1) {
-      sports.pop();
-    } else {
+  Setting.findOne({}, function (err, foundSetting) {
+    if (req.body.action === "add") {
+      if (req.body.mult*foundSetting.exercises[0].perSet < foundSetting.exercises[0].maxRep) {
+        firstExer = req.body.mult*foundSetting.exercises[0].perSet;
+      } else {
+        firstExer = foundSetting.exercises[0].maxRep;
+      }
+      if (req.body.mult*foundSetting.exercises[1].perSet < foundSetting.exercises[1].maxRep) {
+        secondExer = req.body.mult*foundSetting.exercises[1].perSet;
+      } else {
+        secondExer = foundSetting.exercises[1].maxRep;
+      }
+      if (req.body.mult*foundSetting.exercises[2].perSet < foundSetting.exercises[2].maxRep) {
+        thirdExer = req.body.mult*foundSetting.exercises[2].perSet;
+      } else {
+        thirdExer = foundSetting.exercises[2].maxRep;
+      }
+      let newSport = {
+        firstEx: sports[sports.length - 1].firstEx + firstExer,
+        secondEx: sports[sports.length - 1].secondEx + secondExer,
+        thirdEx: sports[sports.length - 1].thirdEx + thirdExer,
+      };
+      if (pressedStart === true) {
+        sports.pop();
+        pressedStart = false;
+      }
+      if (Number(req.body.mult) === 0) {
+        emptyReps++;
+      }
+      if (buttonText === "Start Session!") {
+        sports.pop();
+        startSession();
+      }
+      sports.push(newSport);
+    } else if (req.body.action === "back") {
+      if (sports.length > 1) {
+        sports.pop();
+      } else {
+        sports = [firstSport];
+      }
+      pressedDelete = true;
+    } else if (req.body.action === "reset") {
       sports = [firstSport];
+      endSession();
+    } else {
+      firstExer = 100000;
+      console.log("Something broke!");
     }
-    pressedDelete = true;
-  } else if (req.body.action === "reset") {
-    sports = [firstSport];
-    endSession();
-  } else {
-    pushUps = 100000;
-    console.log("Something broke!");
-  }
-  res.redirect("/gameWorkOut");
+    res.redirect("/gameWorkOut");
+  });
 });
 
 app.post("/addSession", function (req, res) {
@@ -387,9 +462,9 @@ app.post("/addSession", function (req, res) {
       reps: sports.length - emptyReps,
       emptyReps: emptyReps,
       timeDiff: 0,
-      pushUps: req.body.sessionPushUps,
-      sitUps: req.body.sessionSitUps,
-      squats: req.body.sessionSquats,
+      firstExercise: req.body.firstExercise,
+      secondExercise: req.body.secondExercise,
+      thirdExercise: req.body.thirdExercise,
     };
     endSession();
     statistic.timeDiff = date.convertTime(timeDiff);
@@ -398,9 +473,9 @@ app.post("/addSession", function (req, res) {
       reps: statistic.reps,
       emptyReps: statistic.emptyReps,
       timeDiff: statistic.timeDiff,
-      pushUps: statistic.pushUps,
-      sitUps: statistic.sitUps,
-      squats: statistic.squats,
+      firstExercise: statistic.firstExercise,
+      secondExercise: statistic.secondExercise,
+      thirdExercise: statistic.thirdExercise,
     });
     session.save();
     sports = [firstSport];
@@ -408,7 +483,7 @@ app.post("/addSession", function (req, res) {
   }
 });
 
-app.post("/deleteSession", function(req, res){
+app.post("/deleteSession", function (req, res) {
   const sessionId = req.body.sessionId;
   Session.findByIdAndDelete(sessionId, function (err) {
     if (!err) {
@@ -429,11 +504,214 @@ function endSession() {
   emptyReps = 0;
   pressedStart = false;
   firstRep = true;
-  thisPushUps = 0;
-  thisSitUps = 0;
-  thisSquats = 0;
+  firstExer = 0;
+  secondExer = 0;
+  thirdExer = 0;
 }
 
-app.listen(process.env.PORT || 3000, function(){
-  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
+app.post("/updateSettings", function (req, res) {
+  Setting.findOne({}, function (err, foundSetting) {
+    Setting.findOneAndUpdate(
+      {},
+      {
+        $set: {
+          firstCity: checkWho(foundSetting.firstCity, req.body.cityChoice1, 0),
+          secondCity: checkWho(
+            foundSetting.secondCity,
+            req.body.cityChoice2,
+            0
+          ),
+        },
+      },
+      function (err, foundSetting) {
+        if (!err) {
+          console.log(
+            "Updated global information for setting: " + foundSetting._id
+          );
+        }
+      }
+    );
+    Setting.findOneAndUpdate(
+      {
+        _id: foundSetting._id,
+        "exercises.exerciseName": foundSetting.exercises[0].exerciseName,
+      },
+      {
+        $set: {
+          "exercises.$.exerciseName": checkWho(
+            foundSetting.exercises[0].exerciseName,
+            req.body.exerName1,
+            0
+          ),
+          "exercises.$.perSet": checkWho(
+            foundSetting.exercises[0].perSet,
+            req.body.exerSet1,
+            1
+          ),
+          "exercises.$.maxRep": checkWho(
+            foundSetting.exercises[0].maxRep,
+            req.body.exerMaxRep1,
+            1
+          ),
+          "exercises.$.type": req.body.exerType1,
+          "exercises.$.goal": checkWho(
+            foundSetting.exercises[0].goal,
+            req.body.exerGoal1,
+            1
+          ),
+        },
+      },
+      function (err, foundSettings) {
+        if (!err) {
+          console.log(
+            "Updated exercise[0] information for setting: " + foundSetting._id
+          );
+        }
+      }
+    );
+    Setting.findOneAndUpdate(
+      {
+        _id: foundSetting._id,
+        "exercises.exerciseName": foundSetting.exercises[1].exerciseName,
+      },
+      {
+        $set: {
+          "exercises.$.exerciseName": checkWho(
+            foundSetting.exercises[1].exerciseName,
+            req.body.exerName2,
+            0
+          ),
+          "exercises.$.perSet": checkWho(
+            foundSetting.exercises[1].perSet,
+            req.body.exerSet2,
+            1
+          ),
+          "exercises.$.maxRep": checkWho(
+            foundSetting.exercises[1].maxRep,
+            req.body.exerMaxRep2,
+            1
+          ),
+          "exercises.$.type": req.body.exerType2,
+          "exercises.$.goal": checkWho(
+            foundSetting.exercises[1].goal,
+            req.body.exerGoal2,
+            1
+          ),
+        },
+      },
+      function (err, foundSettings) {
+        if (!err) {
+          console.log(
+            "Updated exercise[1] information for setting: " + foundSetting._id
+          );
+        }
+      }
+    );
+    Setting.findOneAndUpdate(
+      {
+        _id: foundSetting._id,
+        "exercises.exerciseName": foundSetting.exercises[2].exerciseName,
+      },
+      {
+        $set: {
+          "exercises.$.exerciseName": checkWho(
+            foundSetting.exercises[2].exerciseName,
+            req.body.exerName3,
+            0
+          ),
+          "exercises.$.perSet": checkWho(
+            foundSetting.exercises[2].perSet,
+            req.body.exerSet3,
+            1
+          ),
+          "exercises.$.maxRep": checkWho(
+            foundSetting.exercises[2].maxRep,
+            req.body.exerMaxRep3,
+            1
+          ),
+          "exercises.$.type": req.body.exerType3,
+          "exercises.$.goal": checkWho(
+            foundSetting.exercises[2].goal,
+            req.body.exerGoal3,
+            1
+          ),
+        },
+      },
+      function (err, foundSettings) {
+        if (!err) {
+          res.redirect("/settings");
+          console.log(
+            "Updated exercise[2] information for setting: " + foundSetting._id
+          );
+        }
+      }
+    );
+  });
 });
+
+function checkWho(oldData, newData, keyWord) {
+  switch (keyWord) {
+    case 0:
+      if (newData.length < 1) {
+        return oldData;
+      } else {
+        return newData;
+      }
+      break;
+    case 1:
+      if (newData.length < 1 || newData < 1) {
+        return oldData;
+      } else {
+        return newData;
+      }
+      break;
+
+    default:
+      console.log(
+        "Somehow you activated chechWho() with a keyWord not available!"
+      );
+      break;
+  }
+}
+
+app.listen(process.env.PORT || 3000, function () {
+  console.log(
+    "Express server listening on port %d in %s mode",
+    this.address().port,
+    app.settings.env
+  );
+});
+
+// const exercise1 = new Exercise({
+//   exerciseName: "Push-Ups",
+//   perSet: 4,
+//   maxRep: 25,
+//   type: "Number",
+//   goal: 120,
+// });
+// exercise1.save();
+// const exercise2 = new Exercise({
+//   exerciseName: "Sit-Ups",
+//   perSet: 24,
+//   maxRep: 150,
+//   type: "Number",
+//   goal: 750,
+// });
+// exercise2.save();
+// const exercise3 = new Exercise({
+//   exerciseName: "Squats",
+//   perSet: 8,
+//   maxRep: 20,
+//   type: "Number",
+//   goal: 240,
+// });
+// exercise3.save();
+// Exercise.find({}, function (err, foundExercises) {
+//   console.log(foundExercises[0]);
+//   const tempSetting = new Setting({
+//     firstCity: "Ramat Gan",
+//     secondCity: "Tel Aviv",
+//     exercises: [foundExercises[0], foundExercises[1], foundExercises[2]]
+//   });
+//   tempSetting.save();
+// });

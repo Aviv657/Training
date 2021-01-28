@@ -64,10 +64,10 @@ function checkBox() {
 }
 
 function checkBox2() {
-    if ($(".box2").hasClass("workOut")) {
-      $(".box2").css({ "top": "100%", "font-size": "2.3rem" })
-    }
+  if ($(".box2").hasClass("workOut")) {
+    $(".box2").css({ top: "100%", "font-size": "2.3rem" });
   }
+}
 
 var timedChecks = setInterval(checkBox, 1000);
 var firstCheck = setTimeout(checkBox, 10);
@@ -77,17 +77,20 @@ $(document).keyup(function (event) {
   switch (event.code) {
     case "KeyZ":
       $("#home").click();
-      location.href = '/';
+      location.href = "/";
       break;
     case "KeyX":
-      location.href = '/gameWorkOut';
+      location.href = "/gameWorkOut";
       break;
     case "KeyC":
-      location.href = '/statistics';
+      location.href = "/statistics";
+      break;
+    case "Backquote":
+      location.href = "/settings";
       break;
 
     default:
-        console.log("You didn't press a defined button!");
+      console.log("You didn't press a defined button!");
       break;
   }
 });

@@ -14,12 +14,12 @@
     type="radio"
     id="cityChoice1"
     name="cityRadio"
-    value="ramat gan"
+    value="<%= firstCity %>"
     checked
   />
-  <label for="cityChoice1">Ramat Gan</label>
-  <input type="radio" id="cityChoice2" name="cityRadio" value="tel aviv" />
-  <label for="cityChoice2">Tel Aviv</label>
+  <label for="cityChoice1"><%= firstCity %></label>
+  <input type="radio" id="cityChoice2" name="cityRadio" value="<%= secondCity %>" />
+  <label for="cityChoice2"><%= secondCity %></label>
   <input type="radio" id="cityChoice3" name="cityRadio" value="other" />
   <label for="cityChoice3">Other</label><br />
   <label class="reveal-if-active" for="cityInput">City Name:</label>

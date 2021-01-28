@@ -18,6 +18,7 @@
       <div class="container">
         <div class="navbar-header">
           <p class="navbar-brand">AVIV'S TRAINING</p>
+          <a class="fas fa-cog settings" href="/settings"></a>
         </div>
         <ul class="nav navbar-nav navbar-right">
           <li><a onclick="" id="home" href="/">Can I run?!</a></li>
@@ -96,34 +97,40 @@
           <div class="container-fluid total-work">
             <div class="row">
               <div class="col-lg-4 col-sm-12">
-                <div class="added invis">+<%= pushUps %></div>
-                <h3>Push-Ups:</h3>
-                <p class="totalSet"><%= PTotalPushUps %></p>
-                <input
+                <div id="plus1" class="added invis">+<%= firstExer %></div>
+                <h3><%= setting.exercises[0].exerciseName %>: </h3>
+                <p id="sum1" class="totalSet"><%= totalFirstExer %></p>
+                <input id="totalEx1"
                   type="hidden"
-                  name="sessionPushUps"
-                  value="<%= PTotalPushUps %>"
+                  name="firstExercise"
+                  value="<%= totalFirstExer %>"
                 />
+                <input type="hidden" id="goal1" value="<%= setting.exercises[0].goal %>">
+                <input type="hidden" id="type1" value="<%= setting.exercises[0].type %>">
               </div>
               <div class="col-lg-4 col-sm-12">
-                <div class="added invis">+<%= sitUps %></div>
-                <h3>Sit-Ups:</h3>
-                <p class="totalSet"><%= PTotalSitUps %></p>
-                <input
+                <div id="plus2" class="added invis">+<%= secondExer %></div>
+                <h3><%= setting.exercises[1].exerciseName %>:</h3>
+                <p id="sum2" class="totalSet"><%= totalSecondExer %></p>
+                <input id="totalEx2"
                   type="hidden"
-                  name="sessionSitUps"
-                  value="<%= PTotalSitUps %>"
+                  name="secondExercise"
+                  value="<%= totalSecondExer %>"
                 />
+                <input type="hidden" id="goal2" value="<%= setting.exercises[1].goal %>">
+                <input type="hidden" id="type2" value="<%= setting.exercises[1].type %>">
               </div>
               <div class="col-lg-4 col-sm-12">
-                <div class="added invis">+<%= squats %></div>
-                <h3>Squats:</h3>
-                <p class="totalSet"><%= PTotalSquats %></p>
-                <input
+                <div id="plus3" class="added invis">+<%= thirdExer %></div>
+                <h3><%= setting.exercises[2].exerciseName %>:</h3>
+                <p id="sum3" class="totalSet"><%= totalThirdExer %></p>
+                <input id="totalEx3"
                   type="hidden"
-                  name="sessionSquats"
-                  value="<%= PTotalSquats %>"
+                  name="thirdExercise"
+                  value="<%= totalThirdExer %>"
                 />
+                <input type="hidden" id="goal3" value="<%= setting.exercises[2].goal %>">
+                <input type="hidden" id="type3" value="<%= setting.exercises[2].type %>">
               </div>
               <input
                 type="hidden"

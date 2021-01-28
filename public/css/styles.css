@@ -42,6 +42,15 @@ input[value="other"]:checked ~ .reveal-if-active {
   background-color: #1abc9c;
 }
 
+/* .test{
+  color: #000000;
+  color: ;
+  color: ;
+  color: ;
+  color: ;
+  color: ;
+} */
+
 .footer p {
   margin-top: 25px;
   font-size: 12px;
@@ -171,7 +180,21 @@ button{
   vertical-align: 60%;
   font-size: 2.2rem;
   color: #28a695;
+  cursor: pointer;
 }
 .info-icn:hover {
   opacity: 70%;
+}
+
+.settings{
+  font-size: 2rem;
+  color: #28a695;
+  position: absolute;
+  top: 20%;
+}
+
+.settings:hover{
+  color: #28a695;
+  text-decoration: none;
+  opacity: 60%;
 }

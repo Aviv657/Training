@@ -10,11 +10,11 @@
     <div class="stat-item col-lg-4 col-sm-12">
       <h3><%= session.date %></h3>
       <div class="grid">
-        <p class="grid-item">Push Ups: <%= session.pushUps %></p>
+        <p class="grid-item"><%= setting.exercises[0].exerciseName %>: <%= session.firstExercise %></p>
         <p class="grid-item">Repetitions: <%= session.reps %></p>
-        <p class="grid-item">Sit Ups: <%= session.sitUps %></p>
+        <p class="grid-item"><%= setting.exercises[1].exerciseName %>: <%= session.secondExercise %></p>
         <p class="grid-item">Empty Repetitions: <%= session.emptyReps %></p>
-        <p class="grid-item">Squats: <%= session.squats %></p>
+        <p class="grid-item"><%= setting.exercises[2].exerciseName %>: <%= session.thirdExercise %></p>
         <p class="grid-item">
           Session Length: ㅤㅤㅤㅤㅤ<%= session.timeDiff %>
         </p>
