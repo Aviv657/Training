@@ -1,7 +1,9 @@
 <%- include("partials/header") %> 
-<div class="invisble-help">
-  <p style="font-size: 1.7rem;">Keybinds for using the weather page! <br>Good to know: <br>This application will get you both the best days in winter and in summer!</p>
-  <img src="/images/weatherKeys.png" alt="keyboard-mapping" class="key-map">
+<div style="font-size: 2rem;" class="invisble-help">
+  <p>This page will calculate for you the best days in the upcoming days to run!</p>
+  <p>This will calcualte using temperature and conditions</p>
+  <p>This way you are covered both in summer and winter!</p>
+  <p>PS: you can change the default cities in the <a href="/settings" class="tt" data-placement="bottom" title="`">settings</a>!</p>
 </div>
 
 <h1>Can I run!?<i class="fas fa-info-circle info-icn"></i></h1>
@@ -17,11 +19,11 @@
     value="<%= firstCity %>"
     checked
   />
-  <label for="cityChoice1"><%= firstCity %></label>
+  <label class="tt" data-toggle="tooltip" data-placement="top" title="1" for="cityChoice1"><%= firstCity %></label>
   <input type="radio" id="cityChoice2" name="cityRadio" value="<%= secondCity %>" />
-  <label for="cityChoice2"><%= secondCity %></label>
+  <label class="tt" data-toggle="tooltip" data-placement="top" title="2" for="cityChoice2"><%= secondCity %></label>
   <input type="radio" id="cityChoice3" name="cityRadio" value="other" />
-  <label for="cityChoice3">Other</label><br />
+  <label class="tt" data-toggle="tooltip" data-placement="top" title="3" for="cityChoice3">Other</label><br />
   <label class="reveal-if-active" for="cityInput">City Name:</label>
   <input class="reveal-if-active" id="cityInput" type="text" name="cityName"/>
   <br />
@@ -39,10 +41,11 @@
   <input type="radio" id="contactChoice3" name="unitType" value="standard" />
   <label for="contactChoice3">Kelvin</label>
   <br /><br />
-  <button id="show" class="btn my-btn" type="submit">Show Weather</button>
+  <button id="show" class="btn my-btn row tt" type="submit" data-toggle="tooltip" data-placement="bottom" title="Spacebar">Show Weather</button>
 </form>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <script src="/js/global.js"></script>
 <script src="/js/index.js"></script>
-
 <%- include("partials/footer") %> 

@@ -51,8 +51,35 @@ const sessionSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  names: {
+    type: Array,
+    required: true,
+  },
+  goals: {
+    type: Array,
+    required: true,
+  },
+  types: {
+    type: Array,
+    required: true,
+  },
 });
 const Session = mongoose.model("Session", sessionSchema);
+
+const statisticSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  total: {
+    type: Number,
+    required: true,
+  },
+  type: {
+    type: String,
+  },
+});
+const Statistic = mongoose.model("Statistic", statisticSchema);
 
 const exerciseSchema = new mongoose.Schema({
   exerciseName: {
@@ -87,6 +114,14 @@ const settingSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  nextSeven: {
+    type: Boolean,
+    required: true,
+  },
+  testMode: {
+    type: Boolean,
+    required: true,
+  },
   exercises: {
     type: [exerciseSchema],
     required: true,
@@ -114,6 +149,7 @@ let pressedDelete = false;
 let firstExer = 0;
 let secondExer = 0;
 let thirdExer = 0;
+let errorType;
 
 app.get("/", function (req, res) {
   if (startedTime > 0) {
@@ -156,6 +192,7 @@ app.get("/404", function (req, res) {
     var time = { hours: 0, minutes: 0, seconds: 0, onOff: false };
   }
   res.render("404", {
+    errorType: errorType,
     input: input,
     hours: time.hours,
     minutes: time.minutes,
@@ -172,7 +209,7 @@ app.get("/gameWorkOut", function (req, res) {
   setTimeout(function () {
     pressedDelete = false;
   }, 500);
-  Setting.findOne({}, function(err, foundSetting){
+  Setting.findOne({}, function (err, foundSetting) {
     res.render("gameWorkOut", {
       setting: foundSetting,
       firstExer: firstExer,
@@ -191,22 +228,35 @@ app.get("/gameWorkOut", function (req, res) {
     });
   });
 });
-app.get("/statistics", function (req, res) {
+app.get("/sessions", function (req, res) {
   if (startedTime > 0) {
     var time = date.bubble(startedTime);
   } else {
     var time = { hours: 0, minutes: 0, seconds: 0, onOff: false };
   }
   Session.find({}, function (err, foundSessions) {
-    Setting.findOne({}, function (err, foundSetting) {
-      res.render("statistics", {
-        setting: foundSetting,
-        sessions: foundSessions.reverse(),
-        hours: time.hours,
-        minutes: time.minutes,
-        seconds: time.seconds,
-        onOff: time.onOff,
-      });
+    res.render("sessions", {
+      sessions: foundSessions.reverse(),
+      hours: time.hours,
+      minutes: time.minutes,
+      seconds: time.seconds,
+      onOff: time.onOff,
+    });
+  });
+});
+app.get("/statistics", function (req, res) {
+  if (startedTime > 0) {
+    var time = date.bubble(startedTime);
+  } else {
+    var time = { hours: 0, minutes: 0, seconds: 0, onOff: false };
+  }
+  Statistic.find({}, function (err, foundStatistics) {
+    res.render("statistics", {
+      statistics: foundStatistics,
+      hours: time.hours,
+      minutes: time.minutes,
+      seconds: time.seconds,
+      onOff: time.onOff,
     });
   });
 });
@@ -228,90 +278,100 @@ app.get("/settings", function (req, res) {
 });
 
 app.post("/", function (req, res) {
-  if (req.body.cityRadio === "other") {
-    var city = req.body.cityName;
-  } else {
-    var city = req.body.cityRadio;
-  }
-  var query = "";
-  city = city.split(" ");
-  for (let i = 0; i < city.length; i++) {
-    query = query + city[i].slice(0, 1).toUpperCase() + city[i].slice(1) + " ";
-  }
-  const apiKey = "9a2a39a6da819de9b03d156235494b78";
-  const unit = req.body.unitType;
-  if (unit === "metric") {
-    unitShow = "celsius";
-  } else if (unit === "imperial") {
-    unitShow = "fahrenheit";
-  } else {
-    unitShow = "kelvin";
-  }
-  const url =
-    "https://api.openweathermap.org/data/2.5/weather?q=" +
-    query +
-    "&appid=" +
-    apiKey;
-
-  https.get(url, function (response) {
-    console.log("Getting location status message- " + response.statusCode);
-    if (response.statusCode === 404) {
-      input = query;
-      res.redirect("/404");
+  Setting.findOne({}, function (err, foundSetting) {
+    if (req.body.cityRadio === "other") {
+      var city = req.body.cityName;
     } else {
-      response.on("data", function (data) {
-        const locationData = JSON.parse(data);
-        const location = {
-          lon: locationData.coord.lon,
-          lat: locationData.coord.lat,
-        };
-        const url2 =
-          "https://api.openweathermap.org/data/2.5/onecall?lat=" +
-          location.lat +
-          "&lon=" +
-          location.lon +
-          "&exclude=current,minutely,hourly,alerts&units=" +
-          unit +
-          "&appid=" +
-          apiKey;
-        https.get(url2, function (response) {
-          console.log("Getting weather status message- " + response.statusCode);
+      var city = req.body.cityRadio;
+    }
+    var query = "";
+    city = city.split(" ");
+    for (let i = 0; i < city.length; i++) {
+      query =
+        query + city[i].slice(0, 1).toUpperCase() + city[i].slice(1) + " ";
+    }
+    const apiKey = "9a2a39a6da819de9b03d156235494b78";
+    const unit = req.body.unitType;
+    if (unit === "metric") {
+      unitShow = "celsius";
+    } else if (unit === "imperial") {
+      unitShow = "fahrenheit";
+    } else {
+      unitShow = "kelvin";
+    }
+    const url =
+      "https://api.openweathermap.org/data/2.5/weather?q=" +
+      query +
+      "&appid=" +
+      apiKey;
 
-          response.on("data", function (data) {
-            const weatherData = JSON.parse(data);
-            firstDay = weatherData.daily[0].dt + "000";
-            firstDay = Number(firstDay) + 25200000;
-            firstDay = new Date(firstDay);
-            firstDay = firstDay.getDay(); //Checking what the first day that is being checked is, to make sure we get only the days that are still left in the week and not any extras.
-            for (let i = 0; i < 7 - firstDay; i++) {
-              //Creating an array of objects with all the info for each day of the week till saturday.
-              daysArray[i] = {
-                dayOfWeek: date.whatDay(i + firstDay),
-                temp: weatherData.daily[i].temp.eve,
-                descId: weatherData.daily[i].weather[0].id,
-                mainDesc: weatherData.daily[i].weather[0].main,
-                desc: weatherData.daily[i].weather[0].description,
-                iconAdress:
-                  "http://openweathermap.org/img/wn/" +
-                  weatherData.daily[i].weather[0].icon +
-                  "@2x.png",
-                score: 0,
-              };
-              daysArray[i].score = calcScore(
-                daysArray[i].temp,
-                daysArray[i].mainDesc,
-                daysArray[i].descId
-              ); //Calculating the score for each day.
-            }
-            daysArray.sort(function (a, b) {
-              return a.score - b.score;
+    https.get(url, function (response) {
+      console.log("Getting location status message- " + response.statusCode);
+      if (response.statusCode === 404) {
+        errorType = 0;
+        input = query;
+        res.redirect("/404");
+      } else {
+        response.on("data", function (data) {
+          const locationData = JSON.parse(data);
+          const location = {
+            lon: locationData.coord.lon,
+            lat: locationData.coord.lat,
+          };
+          const url2 =
+            "https://api.openweathermap.org/data/2.5/onecall?lat=" +
+            location.lat +
+            "&lon=" +
+            location.lon +
+            "&exclude=current,minutely,hourly,alerts&units=" +
+            unit +
+            "&appid=" +
+            apiKey;
+          https.get(url2, function (response) {
+            console.log(
+              "Getting weather status message- " + response.statusCode
+            );
+
+            response.on("data", function (data) {
+              const weatherData = JSON.parse(data);
+              firstDay = weatherData.daily[0].dt + "000";
+              firstDay = Number(firstDay) + 25200000;
+              firstDay = new Date(firstDay);
+              if (foundSetting.nextSeven === false) {
+                firstDay = firstDay.getDay(); //Checking what the first day that is being checked is, to make sure we get only the days that are still left in the week and not any extras.
+              } else {
+                firstDay = 0;
+              }
+              for (let i = 0; i < 7 - firstDay; i++) {
+                //Creating an array of objects with all the info for each day of the week till saturday.
+                daysArray[i] = {
+                  dayOfWeek: date.whatDay(i + firstDay),
+                  temp: weatherData.daily[i].temp.eve,
+                  descId: weatherData.daily[i].weather[0].id,
+                  mainDesc: weatherData.daily[i].weather[0].main,
+                  desc: weatherData.daily[i].weather[0].description,
+                  iconAdress:
+                    "http://openweathermap.org/img/wn/" +
+                    weatherData.daily[i].weather[0].icon +
+                    "@2x.png",
+                  score: 0,
+                };
+                daysArray[i].score = calcScore(
+                  daysArray[i].temp,
+                  daysArray[i].mainDesc,
+                  daysArray[i].descId
+                ); //Calculating the score for each day.
+              }
+              daysArray.sort(function (a, b) {
+                return a.score - b.score;
+              });
+              cityName = query;
+              res.redirect("/weather");
             });
-            cityName = query;
-            res.redirect("/weather");
           });
         });
-      });
-    }
+      }
+    });
   });
 });
 
@@ -398,18 +458,27 @@ function calcScore(temp, mainDesc, id) {
 app.post("/gameWorkOut", function (req, res) {
   Setting.findOne({}, function (err, foundSetting) {
     if (req.body.action === "add") {
-      if (req.body.mult*foundSetting.exercises[0].perSet < foundSetting.exercises[0].maxRep) {
-        firstExer = req.body.mult*foundSetting.exercises[0].perSet;
+      if (
+        req.body.mult * foundSetting.exercises[0].perSet <
+        foundSetting.exercises[0].maxRep
+      ) {
+        firstExer = req.body.mult * foundSetting.exercises[0].perSet;
       } else {
         firstExer = foundSetting.exercises[0].maxRep;
       }
-      if (req.body.mult*foundSetting.exercises[1].perSet < foundSetting.exercises[1].maxRep) {
-        secondExer = req.body.mult*foundSetting.exercises[1].perSet;
+      if (
+        req.body.mult * foundSetting.exercises[1].perSet <
+        foundSetting.exercises[1].maxRep
+      ) {
+        secondExer = req.body.mult * foundSetting.exercises[1].perSet;
       } else {
         secondExer = foundSetting.exercises[1].maxRep;
       }
-      if (req.body.mult*foundSetting.exercises[2].perSet < foundSetting.exercises[2].maxRep) {
-        thirdExer = req.body.mult*foundSetting.exercises[2].perSet;
+      if (
+        req.body.mult * foundSetting.exercises[2].perSet <
+        foundSetting.exercises[2].maxRep
+      ) {
+        thirdExer = req.body.mult * foundSetting.exercises[2].perSet;
       } else {
         thirdExer = foundSetting.exercises[2].maxRep;
       }
@@ -457,29 +526,99 @@ app.post("/addSession", function (req, res) {
     if (pressedStart === true) {
       sports.pop();
     }
-    let statistic = {
-      date: date.getDate(),
-      reps: sports.length - emptyReps,
-      emptyReps: emptyReps,
-      timeDiff: 0,
-      firstExercise: req.body.firstExercise,
-      secondExercise: req.body.secondExercise,
-      thirdExercise: req.body.thirdExercise,
-    };
-    endSession();
-    statistic.timeDiff = date.convertTime(timeDiff);
-    const session = new Session({
-      date: statistic.date,
-      reps: statistic.reps,
-      emptyReps: statistic.emptyReps,
-      timeDiff: statistic.timeDiff,
-      firstExercise: statistic.firstExercise,
-      secondExercise: statistic.secondExercise,
-      thirdExercise: statistic.thirdExercise,
+    Setting.findOne({}, function (err, foundSetting) {
+      let goalsArray = [];
+      let totalArray = [
+        sports[sports.length - 1].firstEx,
+        sports[sports.length - 1].secondEx,
+        sports[sports.length - 1].thirdEx,
+      ];
+      let typesArray = [];
+      for (let i = 0; i < totalArray.length; i++) {
+        if (totalArray[i] >= foundSetting.exercises[i].goal) {
+          goalsArray.push("green");
+        } else {
+          goalsArray.push("red");
+        }
+        if (foundSetting.exercises[i].type === "Seconds") {
+          typesArray.push(foundSetting.exercises[i].type);
+        } else {
+          typesArray.push(null);
+        }
+      }
+      const session = new Session({
+        date: date.getDate(),
+        reps: sports.length - emptyReps,
+        emptyReps: emptyReps,
+        timeDiff: 0,
+        firstExercise: req.body.firstExercise,
+        secondExercise: req.body.secondExercise,
+        thirdExercise: req.body.thirdExercise,
+        names: [
+          req.body.exerciseName1,
+          req.body.exerciseName2,
+          req.body.exerciseName3,
+        ],
+        goals: goalsArray,
+        types: typesArray,
+      });
+      endSession();
+      session.timeDiff = date.convertTime(timeDiff);
+      if (foundSetting.testMode === false) {
+        let sumArray = [
+          session.firstExercise,
+          session.secondExercise,
+          session.thirdExercise,
+        ];
+        for (let i = 0; i < sumArray.length; i++) {
+          Statistic.findOne(
+            { name: session.names[i] },
+            function (err, foundStatistic) {
+              if (!foundStatistic) {
+                const statistic = new Statistic({
+                  name: session.names[i],
+                  total: sumArray[i],
+                  type: typesArray[i],
+                });
+                statistic.save();
+              } else {
+                Statistic.findOneAndUpdate(
+                  { name: session.names[i] },
+                  {
+                    $set: {
+                      total: foundStatistic.total + sumArray[i],
+                    },
+                  },
+                  function (err, foundSetting) {
+                    if (!err) {
+                      console.log("Updated statistic: " + foundSetting._id);
+                    }
+                  }
+                );
+                if (foundStatistic.type != typesArray[i]) {
+                  Statistic.findOneAndUpdate(
+                    { name: session.names[i] },
+                    {
+                      $set: {
+                        type: typesArray[i],
+                      },
+                    },
+                    function (err, foundSetting) {
+                      if (!err) {
+                        console.log("Updated statistic: " + foundSetting._id);
+                      }
+                    }
+                  );
+                }
+              }
+            }
+          );
+        }
+      }
+      session.save();
+      sports = [firstSport];
+      res.redirect("/gameWorkOut");
     });
-    session.save();
-    sports = [firstSport];
-    res.redirect("/gameWorkOut");
   }
 });
 
@@ -487,7 +626,7 @@ app.post("/deleteSession", function (req, res) {
   const sessionId = req.body.sessionId;
   Session.findByIdAndDelete(sessionId, function (err) {
     if (!err) {
-      res.redirect("/statistics");
+      res.redirect("/sessions");
     }
   });
 });
@@ -510,143 +649,175 @@ function endSession() {
 }
 
 app.post("/updateSettings", function (req, res) {
-  Setting.findOne({}, function (err, foundSetting) {
-    Setting.findOneAndUpdate(
-      {},
-      {
-        $set: {
-          firstCity: checkWho(foundSetting.firstCity, req.body.cityChoice1, 0),
-          secondCity: checkWho(
-            foundSetting.secondCity,
-            req.body.cityChoice2,
-            0
-          ),
-        },
-      },
-      function (err, foundSetting) {
-        if (!err) {
-          console.log(
-            "Updated global information for setting: " + foundSetting._id
-          );
-        }
+  if (req.body.action === "clearStatistics") {
+    Statistic.remove
+    Statistic.deleteMany({}, function(err, result){
+      if(!err){
+        console.log(result);
       }
-    );
-    Setting.findOneAndUpdate(
-      {
-        _id: foundSetting._id,
-        "exercises.exerciseName": foundSetting.exercises[0].exerciseName,
-      },
-      {
-        $set: {
-          "exercises.$.exerciseName": checkWho(
-            foundSetting.exercises[0].exerciseName,
-            req.body.exerName1,
-            0
-          ),
-          "exercises.$.perSet": checkWho(
-            foundSetting.exercises[0].perSet,
-            req.body.exerSet1,
-            1
-          ),
-          "exercises.$.maxRep": checkWho(
-            foundSetting.exercises[0].maxRep,
-            req.body.exerMaxRep1,
-            1
-          ),
-          "exercises.$.type": req.body.exerType1,
-          "exercises.$.goal": checkWho(
-            foundSetting.exercises[0].goal,
-            req.body.exerGoal1,
-            1
-          ),
-        },
-      },
-      function (err, foundSettings) {
-        if (!err) {
-          console.log(
-            "Updated exercise[0] information for setting: " + foundSetting._id
-          );
+    });
+    res.redirect("/settings");
+  } else {
+    if (buttonText === "End Session!") {
+      errorType = 1;
+      res.redirect("/404");
+    } else {
+      Setting.findOne({}, function (err, foundSetting) {
+        let checkBoxArray = [req.body.nextSeven, req.body.testMode];
+        for (let t = 0; t < checkBoxArray.length; t++) {
+          if (checkBoxArray[t] === "on") {
+            checkBoxArray[t] = true;
+          } else {
+            checkBoxArray[t] = false;
+          }
         }
-      }
-    );
-    Setting.findOneAndUpdate(
-      {
-        _id: foundSetting._id,
-        "exercises.exerciseName": foundSetting.exercises[1].exerciseName,
-      },
-      {
-        $set: {
-          "exercises.$.exerciseName": checkWho(
-            foundSetting.exercises[1].exerciseName,
-            req.body.exerName2,
-            0
-          ),
-          "exercises.$.perSet": checkWho(
-            foundSetting.exercises[1].perSet,
-            req.body.exerSet2,
-            1
-          ),
-          "exercises.$.maxRep": checkWho(
-            foundSetting.exercises[1].maxRep,
-            req.body.exerMaxRep2,
-            1
-          ),
-          "exercises.$.type": req.body.exerType2,
-          "exercises.$.goal": checkWho(
-            foundSetting.exercises[1].goal,
-            req.body.exerGoal2,
-            1
-          ),
-        },
-      },
-      function (err, foundSettings) {
-        if (!err) {
-          console.log(
-            "Updated exercise[1] information for setting: " + foundSetting._id
-          );
-        }
-      }
-    );
-    Setting.findOneAndUpdate(
-      {
-        _id: foundSetting._id,
-        "exercises.exerciseName": foundSetting.exercises[2].exerciseName,
-      },
-      {
-        $set: {
-          "exercises.$.exerciseName": checkWho(
-            foundSetting.exercises[2].exerciseName,
-            req.body.exerName3,
-            0
-          ),
-          "exercises.$.perSet": checkWho(
-            foundSetting.exercises[2].perSet,
-            req.body.exerSet3,
-            1
-          ),
-          "exercises.$.maxRep": checkWho(
-            foundSetting.exercises[2].maxRep,
-            req.body.exerMaxRep3,
-            1
-          ),
-          "exercises.$.type": req.body.exerType3,
-          "exercises.$.goal": checkWho(
-            foundSetting.exercises[2].goal,
-            req.body.exerGoal3,
-            1
-          ),
-        },
-      },
-      function (err, foundSettings) {
-        if (!err) {
-          res.redirect("/settings");
-          console.log(
-            "Updated exercise[2] information for setting: " + foundSetting._id
-          );
-        }
-      }
-    );
-  });
+        Setting.findOneAndUpdate(
+          {},
+          {
+            $set: {
+              firstCity: checkWho(
+                foundSetting.firstCity,
+                req.body.cityChoice1,
+                0
+              ),
+              secondCity: checkWho(
+                foundSetting.secondCity,
+                req.body.cityChoice2,
+                0
+              ),
+              nextSeven: checkBoxArray[0],
+              testMode: checkBoxArray[1],
+            },
+          },
+          function (err, foundSetting) {
+            if (!err) {
+              console.log(
+                "Updated global information for setting: " + foundSetting._id
+              );
+            }
+          }
+        );
+        Setting.findOneAndUpdate(
+          {
+            _id: foundSetting._id,
+            "exercises.exerciseName": foundSetting.exercises[0].exerciseName,
+          },
+          {
+            $set: {
+              "exercises.$.exerciseName": checkWho(
+                foundSetting.exercises[0].exerciseName,
+                req.body.exerName1,
+                0
+              ),
+              "exercises.$.perSet": checkWho(
+                foundSetting.exercises[0].perSet,
+                req.body.exerSet1,
+                1
+              ),
+              "exercises.$.maxRep": checkWho(
+                foundSetting.exercises[0].maxRep,
+                req.body.exerMaxRep1,
+                1
+              ),
+              "exercises.$.type": req.body.exerType1,
+              "exercises.$.goal": checkWho(
+                foundSetting.exercises[0].goal,
+                req.body.exerGoal1,
+                1
+              ),
+            },
+          },
+          function (err, foundSettings) {
+            if (!err) {
+              console.log(
+                "Updated exercise[0] information for setting: " +
+                  foundSetting._id
+              );
+            }
+          }
+        );
+        Setting.findOneAndUpdate(
+          {
+            _id: foundSetting._id,
+            "exercises.exerciseName": foundSetting.exercises[1].exerciseName,
+          },
+          {
+            $set: {
+              "exercises.$.exerciseName": checkWho(
+                foundSetting.exercises[1].exerciseName,
+                req.body.exerName2,
+                0
+              ),
+              "exercises.$.perSet": checkWho(
+                foundSetting.exercises[1].perSet,
+                req.body.exerSet2,
+                1
+              ),
+              "exercises.$.maxRep": checkWho(
+                foundSetting.exercises[1].maxRep,
+                req.body.exerMaxRep2,
+                1
+              ),
+              "exercises.$.type": req.body.exerType2,
+              "exercises.$.goal": checkWho(
+                foundSetting.exercises[1].goal,
+                req.body.exerGoal2,
+                1
+              ),
+            },
+          },
+          function (err, foundSettings) {
+            if (!err) {
+              console.log(
+                "Updated exercise[1] information for setting: " +
+                  foundSetting._id
+              );
+            }
+          }
+        );
+        Setting.findOneAndUpdate(
+          {
+            _id: foundSetting._id,
+            "exercises.exerciseName": foundSetting.exercises[2].exerciseName,
+          },
+          {
+            $set: {
+              "exercises.$.exerciseName": checkWho(
+                foundSetting.exercises[2].exerciseName,
+                req.body.exerName3,
+                0
+              ),
+              "exercises.$.perSet": checkWho(
+                foundSetting.exercises[2].perSet,
+                req.body.exerSet3,
+                1
+              ),
+              "exercises.$.maxRep": checkWho(
+                foundSetting.exercises[2].maxRep,
+                req.body.exerMaxRep3,
+                1
+              ),
+              "exercises.$.type": req.body.exerType3,
+              "exercises.$.goal": checkWho(
+                foundSetting.exercises[2].goal,
+                req.body.exerGoal3,
+                1
+              ),
+            },
+          },
+          function (err, foundSettings) {
+            if (!err) {
+              res.redirect("/settings");
+              console.log(
+                "Updated exercise[2] information for setting: " +
+                  foundSetting._id
+              );
+            }
+          }
+        );
+      });
+    }
+  }
 });
 
 function checkWho(oldData, newData, keyWord) {
@@ -681,37 +852,3 @@ app.listen(process.env.PORT || 3000, function () {
     app.settings.env
   );
 });
-
-// const exercise1 = new Exercise({
-//   exerciseName: "Push-Ups",
-//   perSet: 4,
-//   maxRep: 25,
-//   type: "Number",
-//   goal: 120,
-// });
-// exercise1.save();
-// const exercise2 = new Exercise({
-//   exerciseName: "Sit-Ups",
-//   perSet: 24,
-//   maxRep: 150,
-//   type: "Number",
-//   goal: 750,
-// });
-// exercise2.save();
-// const exercise3 = new Exercise({
-//   exerciseName: "Squats",
-//   perSet: 8,
-//   maxRep: 20,
-//   type: "Number",
-//   goal: 240,
-// });
-// exercise3.save();
-// Exercise.find({}, function (err, foundExercises) {
-//   console.log(foundExercises[0]);
-//   const tempSetting = new Setting({
-//     firstCity: "Ramat Gan",
-//     secondCity: "Tel Aviv",
-//     exercises: [foundExercises[0], foundExercises[1], foundExercises[2]]
-//   });
-//   tempSetting.save();
-// });

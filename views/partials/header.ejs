@@ -6,7 +6,7 @@
   <title>Weather App</title>
   <meta charset="utf-8">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="icon" href="/images/favicon.ico" />
+  <link rel="icon" href="/images/favicon1.ico" />
   <link rel="stylesheet" href="/css/styles.css">
       <script
       src="https://kit.fontawesome.com/e7a61b10ca.js"
@@ -16,12 +16,12 @@
     <div class="container">
       <div class="navbar-header">
         <p class="navbar-brand">AVIV'S TRAINING</p>
-        <a class="fas fa-cog settings" href="/settings"></a>
+        <a class="fas fa-cog settings tt" href="/settings" data-placement="bottom" title="`"></a>
       </div>
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="/">Can I run?!</a></li>
-          <li><a href="/gameWorkOut">Home Workout</a></li>
-          <li><a href="/statistics">Statistics</a></li>
+          <li><a class="tt" href="/" data-placement="bottom" title="Z">Can I run?!</a></li>
+          <li><a class="tt" href="/gameWorkOut" data-placement="bottom" title="X">Home Workout</a></li>
+          <li><a class="tt" href="/sessions" data-placement="bottom" title="C">Statistics</a></li>
           <div class="box2 sb9"></div>
           <input id="hours" value="<%= hours %>" type="hidden">
           <input id="minutes" value="<%= minutes %>" type="hidden">

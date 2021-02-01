@@ -1,0 +1,42 @@
+<%- include("partials/header") %>
+<div class="container-fluid statistic-buttons">
+    <a href="/sessions" class="btn my-btn disabled">Sessions</a>
+    <a href="/statistics" class="btn my-btn tt" data-placement="bottom" title="S">Statistics</a>
+</div>
+<% var j = 0 %> 
+<div style="font-size: 2rem;" class="invisble-help">
+  <p>This page will calculate for you the best days in the upcoming days to run!</p>
+</div>
+
+<h1>Sessions</h1>
+<div class="container-fluid">
+  <div class="row">
+    <% if(sessions.length < 1){ %>
+    <h3>There are no past sessions yet!</h3>
+    <p>Go to "Home Workout" to finish and upload sessions!</p>
+    <% }else{ %> <% sessions.forEach(function(session){ %>
+      <% j++ %> 
+    <div class="stat-item col-lg-4 col-sm-12">
+      <h3 class="session-date<%= j %>"><%= session.date %></h3>
+      <div class="grid">
+        <p class="grid-item <%= session.goals[0] %>"><%= session.names[0] %>: <%= session.firstExercise %> <%= session.types[0] %> </p>
+        <p class="grid-item">Repetitions: <%= session.reps %></p>
+        <p class="grid-item <%= session.goals[1] %>"><%= session.names[1] %>: <%= session.secondExercise %> <%= session.types[1] %></p>
+        <p class="grid-item">Empty Repetitions: <%= session.emptyReps %></p>
+        <p class="grid-item <%= session.goals[2] %>"><%= session.names[2] %>: <%= session.thirdExercise %> <%= session.types[2] %></p>
+        <p class="grid-item">
+          Session Length: ㅤㅤㅤㅤㅤ<%= session.timeDiff %>
+        </p>
+        <input type="hidden" id="session-id<%= j %>" value="<%= session._id %>" />
+          <button class="delete<%= j %> delete stat-button btn fas fa-trash-alt "></button>
+      </div>
+    </div>
+    <% })} %>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/global.js"></script>
+<script src="/js/statistics.js"></script>
+
+<%- include("partials/footer") %>

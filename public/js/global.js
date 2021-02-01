@@ -74,23 +74,33 @@ var firstCheck = setTimeout(checkBox, 10);
 var firstCheck2 = setTimeout(checkBox2, 10);
 
 $(document).keyup(function (event) {
-  switch (event.code) {
-    case "KeyZ":
-      $("#home").click();
-      location.href = "/";
-      break;
-    case "KeyX":
-      location.href = "/gameWorkOut";
-      break;
-    case "KeyC":
-      location.href = "/statistics";
-      break;
-    case "Backquote":
-      location.href = "/settings";
-      break;
-
-    default:
-      console.log("You didn't press a defined button!");
-      break;
+  if(!$("input").is(":focus")){
+    switch (event.code) {
+      case "KeyZ":
+        $("#home").click();
+        location.href = "/";
+        break;
+      case "KeyX":
+        location.href = "/gameWorkOut";
+        break;
+      case "KeyC":
+        location.href = "/sessions";
+        break;
+      case "Backquote":
+        location.href = "/settings";
+        break;
+  
+      default:
+        console.log("You didn't press a defined button!");
+        break;
+    }
+  }else{
+    console.log("im inside a text box bittcchhhh");
   }
+
+});
+
+
+$(document).ready(function(){
+  $('.tt').tooltip();
 });

@@ -8,7 +8,7 @@
       rel="stylesheet"
       href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
     />
-    <link rel="icon" href="/images/favicon.ico" />
+    <link rel="icon" href="/images/favicon1.ico" />
     <link rel="stylesheet" href="/css/styles.css" />
     <script
       src="https://kit.fontawesome.com/e7a61b10ca.js"
@@ -18,12 +18,12 @@
       <div class="container">
         <div class="navbar-header">
           <p class="navbar-brand">AVIV'S TRAINING</p>
-          <a class="fas fa-cog settings" href="/settings"></a>
+          <a class="fas fa-cog settings tt" href="/settings" data-placement="bottom" title="`"></a>
         </div>
-        <ul class="nav navbar-nav navbar-right">
-          <li><a onclick="" id="home" href="/">Can I run?!</a></li>
-          <li><a id="gameWorkOut" href="/gameWorkOut">Home Workout</a></li>
-          <li><a id="statistics" href="/statistics">Statistics</a></li>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a class="tt" href="/" data-placement="bottom" title="Z">Can I run?!</a></li>
+            <li><a class="tt" href="/gameWorkOut" data-placement="bottom" title="X">Home Workout</a></li>
+            <li><a class="tt" href="/sessions" data-placement="bottom" title="C">Statistics</a></li>
           <div class="box2 workOut"></div>
           <input id="hours" value="<%= hours %>" type="hidden" />
           <input id="minutes" value="<%= minutes %>" type="hidden" />
@@ -34,9 +34,20 @@
     </nav>
     <body>
       <div id="whole" class="container">
-        <div class="invisble-help">
-          <p style="font-size: 1.7rem;">Keybinds for using the workout page! <br>Good to know: <br>After finishing a session you can go to "Statistics" to see the stats!</p>
-          <img src="/images/workOutKeys.png" alt="keyboard-mapping" class="key-map">
+        <div style="font-size: 2rem;" class="invisble-help">
+          <p>Take whatever game you want, make up a rule for doing a set<br>Whenever you break that rule(like dying in the game) you do a set!</p>
+          <p>You can change the workout details and functionality in the <a href="/settings" class="tt" data-placement="bottom" title="`">settings</a>!</p>
+          <h3>Usage:</h3>
+          <p class="rule-list" style="font-size: 2rem;"><b>Add Up:</b> After selecting how many sets, pressing this will calculate the exercise you need to do!</p>
+          <p class="rule-list" style="font-size: 2rem;"><b>Go Back:</b> Will take you one repetition back at a time all the way back to 0!</p>
+          <p class="rule-list" style="font-size: 2rem;"><b>Reset:</b> Will cancel the workout like you never pressed the "Start Session" button!</p>
+          <p class="rule-list" style="font-size: 2rem;"><b>Start Session:</b> Will start the workout(timer will show up), press again to finish the session! <br>
+          You can also start a session by pressing the "Add Up" button for the first time!</p>
+          <h3>Rules ideas:</h3>
+          <p class="rule-list">>Whenever you die you do a set.</p>
+          <p class="rule-list">>At the end of a match you calculate the kill death ratio and do a number of sets.</p>
+          <p class="rule-list">>Hard: Whenever someone does a specific thing do a set(example:whenever someone jump).</p>
+          <p class="rule-list">>Do a set every X minutes(BORING)</p>
         </div>
         <h1>Game Workout!<i class="fas fa-info-circle info-icn"></i></h1>
         <p>
@@ -45,48 +56,48 @@
         </p>
         <form action="/gameWorkOut" method="POST">
           <input type="radio" id="mult1" name="mult" value="1" checked />
-          <label for="mult1">1</label>
+          <label class="tt" data-toggle="tooltip" data-placement="top" title="0-9" for="mult1">1</label>
           <input type="radio" id="mult2" name="mult" value="2" />
-          <label for="mult2">2</label>
+          <label class="tt" data-toggle="tooltip" data-placement="top" title="0-9" for="mult2">2</label>
           <input type="radio" id="mult3" name="mult" value="3" />
-          <label for="mult3">3</label><br />
+          <label class="tt" data-toggle="tooltip" data-placement="top" title="0-9" for="mult3">3</label><br />
           <input type="radio" id="mult4" name="mult" value="4" />
-          <label for="mult4">4</label>
+          <label class="tt" data-toggle="tooltip" data-placement="top" title="0-9" for="mult4">4</label>
           <input type="radio" id="mult5" name="mult" value="5" />
-          <label for="mult5">5</label>
+          <label class="tt" data-toggle="tooltip" data-placement="top" title="0-9" for="mult5">5</label>
           <input type="radio" id="mult6" name="mult" value="6" />
-          <label for="mult6">6</label><br />
+          <label class="tt" data-toggle="tooltip" data-placement="top" title="0-9" for="mult6">6</label><br />
           <input type="radio" id="mult7" name="mult" value="7" />
-          <label for="mult7">7</label>
+          <label class="tt" data-toggle="tooltip" data-placement="top" title="0-9" for="mult7">7</label>
           <input type="radio" id="mult8" name="mult" value="8" />
-          <label for="mult8">8</label>
+          <label class="tt" data-toggle="tooltip" data-placement="top" title="0-9" for="mult8">8</label>
           <input type="radio" id="mult9" name="mult" value="9" />
-          <label for="mult9">9</label>
+          <label class="tt" data-toggle="tooltip" data-placement="top" title="0-9" for="mult9">9</label>
           <input type="radio" id="mult0" name="mult" value="0"/>
-          <label for="mult0">0</label><br /><br />
-          <button
+          <label class="tt" data-toggle="tooltip" data-placement="top" title="0-9" for="mult0">0</label><br /><br />
+          <button data-toggle="tooltip" data-placement="top" title="Spacebar"
             id="add"
             name="action"
             value="add"
-            class="btn my-btn"
+            class="btn my-btn tt"
             type="submit"
           >
             Add Up
           </button>
-          <button
+          <button data-toggle="tooltip" data-placement="top" title="Backspace"
             id="back"
             name="action"
             value="back"
-            class="btn my-btn"
+            class="btn my-btn tt"
             type="submit"
           >
             Go Back
           </button>
-          <button
+          <button data-toggle="tooltip" data-placement="top" title="R"
             id="reset"
             name="action"
             value="reset"
-            class="btn my-btn"
+            class="btn my-btn tt"
             type="submit"
           >
             Reset
@@ -105,6 +116,7 @@
                   name="firstExercise"
                   value="<%= totalFirstExer %>"
                 />
+                <input type="hidden" name="exerciseName1" value="<%= setting.exercises[0].exerciseName %>">
                 <input type="hidden" id="goal1" value="<%= setting.exercises[0].goal %>">
                 <input type="hidden" id="type1" value="<%= setting.exercises[0].type %>">
               </div>
@@ -117,6 +129,7 @@
                   name="secondExercise"
                   value="<%= totalSecondExer %>"
                 />
+                <input type="hidden" name="exerciseName2" value="<%= setting.exercises[1].exerciseName %>">
                 <input type="hidden" id="goal2" value="<%= setting.exercises[1].goal %>">
                 <input type="hidden" id="type2" value="<%= setting.exercises[1].type %>">
               </div>
@@ -129,6 +142,7 @@
                   name="thirdExercise"
                   value="<%= totalThirdExer %>"
                 />
+                <input type="hidden" name="exerciseName3" value="<%= setting.exercises[2].exerciseName %>">
                 <input type="hidden" id="goal3" value="<%= setting.exercises[2].goal %>">
                 <input type="hidden" id="type3" value="<%= setting.exercises[2].type %>">
               </div>
@@ -144,13 +158,14 @@
               />
             </div>
           </div>
-          <button
+          <button data-toggle="tooltip" data-placement="top" title="F"
             id="session"
-            class="btn my-btn btn-lg btn-block"
+            class="btn my-btn btn-lg btn-block tt"
             type="submit"
           ><%= sessionButton %></button>
         </form>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <script src="/js/global.js"></script>
         <script src="/js/gameWorkOut.js"></script>
 

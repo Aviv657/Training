@@ -31,26 +31,28 @@ for (let i = 1; i < 4; i++) {
     $("#plus" + i).text($("#plus" + i).text() + " Seconds");
     $("#sum" + i).text($("#sum" + i).text() + " Seconds");
   }
-  calcStage($("#sum" + i) ,Number($("#totalEx" + i).val()), Number($("#goal" + i).val()));
+  if($("#session").text() === "End Session!"){
+    calcStage($("#sum" + i) ,Number($("#totalEx" + i).val()), Number($("#goal" + i).val()));
+  }
 }
 
 function calcStage(target, current, goal){
   let cuts = goal/5;
   switch (true) {
     case cuts >= current:
-      $(target).css( "color", "#000000" );
+      $(target).css( "color", "#ff3232" );
       break;
     case cuts*2 >= current && cuts < current:
-      $(target).css( "color", "#3b4d49" );
+      $(target).css( "color", "#ff8432" );
       break;
     case cuts*3 >= current && cuts*2 < current:
-      $(target).css( "color", "#40665e" );
+      $(target).css( "color", "#ffe032" );
       break;
     case cuts*4 >= current && cuts*3 < current:
-      $(target).css( "color", "#397a6d" );
+      $(target).css( "color", "#84ff32" );
       break;
     case goal > current && cuts*4 < current:
-      $(target).css( "color", "#279680" );
+      $(target).css( "color", "#32ff76" );
       break;
     case goal <= current:
       $(target).css( "color", "#1abc9c" );

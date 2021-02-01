@@ -1,8 +1,25 @@
 <%- include("partials/header") %>
-<h1>Settings</h1>
+<div class="invisble-help">
+  <h2>These are the page's settings and their explanations!</h2>
+  <p class="rule-list" style="font-size: 2rem;"><b style="font-size: 2.2rem;">Default Cities:</b> Here you can change the first two city options in the weather page!</p>
+  <p class="rule-list" style="font-size: 2rem;"><b style="font-size: 2.2rem;">Strict 7 Days:</b> If on, will show you the best weather for the next 7 days(otherwise just the rest of the week).</p>
+  <p class="rule-list" style="font-size: 2rem;"><b style="font-size: 2.2rem;">Test Mode:</b> If on, will put you on test mode which won't update certain things into the database.</p>
+  <br>
+  <p class="rule-list" style="font-size: 2rem;"><b style="font-size: 2.2rem;">Exercise Name:</b> When you change the name and do a training, it will create a new statistic for that name! <br>
+  If you change the name back to one of the names in statistics, it will keep adding to said statistic!</p>
+  <p class="rule-list" style="font-size: 2rem;"><b style="font-size: 2.2rem;">Per Set:</b> How manny repetitions the calculator will do per set.</p>
+  <p class="rule-list" style="font-size: 2rem;"><b style="font-size: 2.2rem;">Max In Rep:</b> The maximum the calculator will allow when pressing "add" in Home Workout. <br>
+  Really important to avoid straining, you don't want to do too many repetitions of the same exercise at once!</p>
+  <p class="rule-list" style="font-size: 2rem;"><b style="font-size: 2.2rem;">Type:</b> Let you choose between seconds\number depending on how you want to do said exercise.</p>
+  <p class="rule-list" style="font-size: 2rem;"><b style="font-size: 2.2rem;">Goal:</b> Will put a goal on said exercise, while training using home workout <br>
+  you can see how far you are from the goal with the colors on the number, will also show up in sessions!</p>
+  <p class="rule-list" style="font-size: 2rem;"><b style="font-size: 2.2rem; color: yellow;">Clear Statistics(Temporary):</b> Will clear the whole statistics database!</p>
+</div>
+
+<h1>Settings<i class="fas fa-info-circle info-icn"></i></h1>
 <p>
   Here you can control the settings of your training program! <br />
-  From changing default weather cities to changing sets numbers!
+  If you are unsure what each setting does, press the info icon above!
 </p>
 <form action="/updateSettings" method="POST">
   <h3>Weather options:</h3>
@@ -12,7 +29,22 @@
     <% var j= 1 %>
   <input type="text" name="cityChoice1" placeholder="<%= setting.firstCity %>" />
   <input type="text" name="cityChoice2" placeholder="<%= setting.secondCity %>" />
-  <br>
+  <div class="switches">
+    <input type="hidden" id="checkbox0" value="<%= setting.nextSeven %>">
+    <p>Strictly show next 7 days:</p>
+    <label class="switch">
+        <input type="checkbox" id="checkOption0" name="nextSeven">
+        <span class="slider"></span>
+    </label>
+  </div>
+  <div class="switches">
+    <input type="hidden" id="checkbox1" value="<%= setting.testMode %>">
+    <p>Test mode:</p>
+    <label class="switch tt" data-toggle="tooltip" data-placement="top" title="T">
+        <input type="checkbox" id="checkOption1" name="testMode">
+        <span class="slider"></span>
+    </label>
+  </div>
   <h3>Training options:</h3>
   <p>Set Options:</p>
   <table class="table">
@@ -45,9 +77,12 @@
     </tbody>
   </table>
   <% }) %>
-  <button class="btn my-btn" type="submit">Apply Changes</button>
+  <button class="btn my-btn tt" name="action" value="changeSettings" data-toggle="tooltip" data-placement="top" title="Spacebar" type="submit">Apply Changes</button>
+  <button class="btn my-btn" name="action" value="clearStatistics" type="submit">Clear Statistics</button>
 </form>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <script src="/js/global.js"></script>
 <script src="/js/settings.js"></script>
 

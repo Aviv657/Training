@@ -93,7 +93,7 @@ exports.convertTime = function convertTime(time) {
       Math.round(newTime / 3600) +
       " " +
       hours +
-      " and ㅤㅤㅤㅤㅤ" +
+      " and " +
       Math.round((newTime % 3600)/60) +
       " " +
       minutes
