@@ -290,7 +290,7 @@ app.post("/", function (req, res) {
       query =
         query + city[i].slice(0, 1).toUpperCase() + city[i].slice(1) + " ";
     }
-    const apiKey = "9a2a39a6da819de9b03d156235494b78";
+    const apiKey = process.env.API_KEY;
     const unit = req.body.unitType;
     if (unit === "metric") {
       unitShow = "celsius";
